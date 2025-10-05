@@ -1,6 +1,6 @@
 # RowCode
 
-![RowCode](RowCode.png)
+![RowCode](rowcode-thumb.png)
 
 [![Demo](https://img.shields.io/badge/Demo-blue.svg)](https://rownok.com/tool/code)
 
