@@ -1,6 +1,6 @@
 # RowCode
 
-![RowCode](rowcode-thumb.png)
+![RowCode](RowCode.png)
 
 [![Demo](https://img.shields.io/badge/Demo-blue.svg)](https://rownok.com/tool/code)
 
@@ -29,3 +29,7 @@ RowCode is a mobile-first code editor for HTML, CSS, and JavaScript that works i
 ### Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue on the [GitHub repository](https://github.com/rownok860/rowcode).
+
+### Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=rownok860/rowcode)](https://github.com/rownok860/rowcode/graphs/contributors)
