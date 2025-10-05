@@ -4,261 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RowCode - Mobile Code Editor</title>
-    <meta name="description" content="A mobile-first code editor for HTML, CSS, and JavaScript">
-    <meta name="theme-color" content="#2c3e50">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/x-icon" href="RowCode.png">
-     <link rel="icon" href="icon-192.png">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="description" content="Code in your browser. A mobile-first code editor for HTML, CSS, and JavaScript.">
+    <meta name="author" content="Rownok Ahmed">
+    <meta name="keywords" content="code, editor, browser, html, css, javascript, online, web development, mobile, responsive, free, tool, rownok">
+    <meta property="og:title" content="RowCode - Code in your browser">
+    <meta property="og:description" content="A mobile-first code editor for HTML, CSS, and JavaScript that works in your browser.">
+    <meta property="og:image" content="https://rownok.com/tool/code/RowCode.png">
+    <meta property="og:url" content="https://rownok.com/tool/code">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "RowCode",
+      "description": "Code in your browser. A mobile-first code editor for HTML, CSS, and JavaScript.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "url": "https://rownok.com/tool/code",
+      "image": "https://rownok.com/tool/code/RowCode.png",
+      "author": {
+        "@type": "Person",
+        "name": "Rownok Ahmed"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --primary: #3498db;
-            --primary-dark: #2980b9;
-            --secondary: #2c3e50;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #34495e;
-            --success: #2ecc71;
-            --editor-bg: #1e1e1e;
-            --header-bg: #252526;
-            --tab-bg: #2d2d30;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--secondary);
-            color: var(--light);
-            height: 100vh;
-            overflow: hidden;
-            touch-action: pan-y;
-        }
-
-        #app {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        .header {
-            background: var(--header-bg);
-            padding: 12px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 10;
-            flex-shrink: 0;
-        }
-
-        .app-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-            background: var(--primary-dark);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-        }
-
-        .btn-success {
-            background: var(--success);
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            background: var(--tab-bg);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            flex-shrink: 0;
-        }
-
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-
-        .tab {
-            padding: 12px 20px;
-            white-space: nowrap;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab.active {
-            border-bottom-color: var(--primary);
-            background: rgba(52, 152, 219, 0.1);
-        }
-
-        /* Editor Area */
-        .editor-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .editor-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .editor-header {
-            padding: 8px 15px;
-            background: var(--header-bg);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #ccc;
-            flex-shrink: 0;
-        }
-
-        textarea {
-            flex: 1;
-            background: var(--editor-bg);
-            color: #d4d4d4;
-            border: none;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 16px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-            width: 100%;
-            -webkit-overflow-scrolling: touch;
-            overflow-y: auto;
-        }
-
-        /* Quick Preview */
-        .quick-preview {
-            background: var(--dark);
-            padding: 12px 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .preview-info {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--success);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 100;
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            .btn span.text {
-                display: none;
-            }
-            
-            .btn {
-                padding: 10px;
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-            }
-            
-            .tab {
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .app-title {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* Handle very small screens */
-        @media (max-width: 360px) {
-            .header {
-                padding: 10px;
-            }
-            
-            .tab {
-                padding: 10px 12px;
-                font-size: 0.85rem;
-            }
-            
-            .tab i {
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Hide scrollbars but keep functionality */
-        textarea::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        textarea::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div id="app">
@@ -269,6 +43,10 @@
                 <span>RowCode</span>
             </div>
             <div class="header-controls">
+                <a href="https://github.com/rownok860/rowcode" target="_blank" class="btn">
+                    <i class="fab fa-github"></i>
+                    <span class="text">Contribute</span>
+                </a>
                 <button class="btn" id="save-btn">
                     <i class="fas fa-save"></i>
                     <span class="text">Save</span>
@@ -596,172 +374,6 @@ class MobileGestures {
         <div class="toast" id="toast">Code saved successfully!</div>
     </div>
 
-    <script>
-        // DOM Elements
-        const htmlEditor = document.getElementById('html-editor');
-        const cssEditor = document.getElementById('css-editor');
-        const jsEditor = document.getElementById('js-editor');
-        const tabs = document.querySelectorAll('.tab');
-        const saveBtn = document.getElementById('save-btn');
-        const runBtn = document.getElementById('run-btn');
-        const clearBtn = document.getElementById('clear-btn');
-        const formatBtn = document.getElementById('format-btn');
-        const toast = document.getElementById('toast');
-        const currentFile = document.getElementById('current-file');
-
-        // Tab switching
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                
-                // Hide all editors
-                document.querySelectorAll('.editor-wrapper textarea').forEach(editor => {
-                    editor.style.display = 'none';
-                });
-                
-                // Show the selected editor
-                const tabType = tab.getAttribute('data-tab');
-                document.getElementById(`${tabType}-editor`).style.display = 'block';
-                currentFile.textContent = `${tabType === 'html' ? 'index' : tabType}.${tabType}`;
-            });
-        });
-
-        // Save code to localStorage
-        function saveCode() {
-            const codeData = {
-                html: htmlEditor.value,
-                css: cssEditor.value,
-                js: jsEditor.value,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('rowCodeData', JSON.stringify(codeData));
-            
-            // Show toast notification
-            showToast('Code saved successfully!');
-        }
-
-        // Run code - redirect to preview page
-        function runCode() {
-            // Save code first
-            saveCode();
-            
-            // Open preview in new tab
-            window.open('preview.html', '_blank');
-            
-            showToast('Opening preview...');
-        }
-
-        // Clear all editors
-        function clearCode() {
-            if (confirm('Are you sure you want to clear all code?')) {
-                htmlEditor.value = '';
-                cssEditor.value = '';
-                jsEditor.value = '';
-                showToast('All editors cleared');
-            }
-        }
-
-        // Format code
-        function formatCode() {
-            const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-            const editor = document.getElementById(`${activeTab}-editor`);
-            
-            let formattedCode = editor.value;
-            
-            if (activeTab === 'html') {
-                formattedCode = formattedCode
-                    .replace(/\s+/g, ' ')
-                    .replace(/>\s+</g, '>\n<')
-                    .replace(/\s*>\s*/g, '>\n');
-            } else if (activeTab === 'css') {
-                formattedCode = formattedCode
-                    .replace(/\s*{\s*/g, ' {\n  ')
-                    .replace(/\s*;\s*/g, ';\n  ')
-                    .replace(/\s*}\s*/g, '\n}\n\n');
-            } else if (activeTab === 'js') {
-                formattedCode = formattedCode
-                    .replace(/\s*{\s*/g, ' {\n  ')
-                    .replace(/\s*}\s*/g, '\n}\n')
-                    .replace(/\s*;\s*/g, ';\n  ');
-            }
-            
-            editor.value = formattedCode;
-            showToast('Code formatted');
-        }
-
-        // Show toast notification
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
-        }
-
-        // Load saved code
-        function loadCode() {
-            const savedCode = localStorage.getItem('rowCodeData');
-            if (savedCode) {
-                const codeData = JSON.parse(savedCode);
-                htmlEditor.value = codeData.html || htmlEditor.value;
-                cssEditor.value = codeData.css || cssEditor.value;
-                jsEditor.value = codeData.js || jsEditor.value;
-            }
-        }
-
-        // Event listeners
-        saveBtn.addEventListener('click', saveCode);
-        runBtn.addEventListener('click', runCode);
-        clearBtn.addEventListener('click', clearCode);
-        formatBtn.addEventListener('click', formatCode);
-
-        // Auto-save on input with debounce
-        let timeout;
-        [htmlEditor, cssEditor, jsEditor].forEach(editor => {
-            editor.addEventListener('input', () => {
-                clearTimeout(timeout);
-                timeout = setTimeout(saveCode, 1500);
-            });
-        });
-
-        // Load saved code on startup
-        loadCode();
-
-        // PWA Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((registration) => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
-
-        // Handle app installation
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            
-            // Show install prompt (you can customize this)
-            setTimeout(() => {
-                if (deferredPrompt && confirm('Install RowCode for a better experience?')) {
-                    deferredPrompt.prompt();
-                    deferredPrompt.userChoice.then((choiceResult) => {
-                        deferredPrompt = null;
-                    });
-                }
-            }, 3000);
-        });
-    </script>
+    <script src="js/script.js"></script>
 </body>
 </html>
