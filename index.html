@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RowCode - Mobile Code Editor</title>
+    <meta name="description" content="A mobile-first code editor for HTML, CSS, and JavaScript">
+    <meta name="theme-color" content="#2c3e50">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/x-icon" href="RowCode.png">
+     <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+            --editor-bg: #1e1e1e;
+            --header-bg: #252526;
+            --tab-bg: #2d2d30;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--secondary);
+            color: var(--light);
+            height: 100vh;
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+
+        #app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--header-bg);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .app-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--tab-bg);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        /* Editor Area */
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-header {
+            padding: 8px 15px;
+            background: var(--header-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #ccc;
+            flex-shrink: 0;
+        }
+
+        textarea {
+            flex: 1;
+            background: var(--editor-bg);
+            color: #d4d4d4;
+            border: none;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+
+        /* Quick Preview */
+        .quick-preview {
+            background: var(--dark);
+            padding: 12px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .preview-info {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .btn span.text {
+                display: none;
+            }
+            
+            .btn {
+                padding: 10px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .app-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Handle very small screens */
+        @media (max-width: 360px) {
+            .header {
+                padding: 10px;
+            }
+            
+            .tab {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .tab i {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Hide scrollbars but keep functionality */
+        textarea::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <div class="header">
+            <div class="app-title">
+                <i class="fas fa-code"></i>
+                <span>RowCode</span>
+            </div>
+            <div class="header-controls">
+                <button class="btn" id="save-btn">
+                    <i class="fas fa-save"></i>
+                    <span class="text">Save</span>
+                </button>
+                <button class="btn btn-success" id="run-btn">
+                    <i class="fas fa-play"></i>
+                    <span class="text">Run</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="html">
+                <i class="fab fa-html5"></i>
+                <span>HTML</span>
+            </div>
+            <div class="tab" data-tab="css">
+                <i class="fab fa-css3-alt"></i>
+                <span>CSS</span>
+            </div>
+            <div class="tab" data-tab="js">
+                <i class="fab fa-js-square"></i>
+                <span>JavaScript</span>
+            </div>
+        </div>
+
+        <!-- Editor Area -->
+        <div class="editor-container">
+            <div class="editor-wrapper">
+                <div class="editor-header">
+                    <div id="current-file">index.html</div>
+                    <div class="editor-actions">
+                        <button class="btn btn-outline" id="format-btn">
+                            <i class="fas fa-code"></i>
+                        </button>
+                    </div>
+                </div>
+                <textarea id="html-editor" spellcheck="false" placeholder="Write your HTML code here...">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;My Mobile App&lt;/title&gt;
+    &lt;style&gt;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .container { 
+            max-width: 400px; 
+            width: 100%;
+        }
+        h1 { 
+            font-size: 2.2rem; 
+            margin-bottom: 15px; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        p { 
+            font-size: 1.1rem; 
+            margin-bottom: 25px; 
+            opacity: 0.9; 
+            line-height: 1.5;
+        }
+        button {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            font-weight: 600;
+            margin: 10px;
+        }
+        button:active { 
+            transform: scale(0.95); 
+            background: rgba(255,255,255,0.3);
+        }
+        #output { 
+            margin-top: 25px; 
+            min-height: 50px; 
+            font-size: 1.1rem;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+        @media (max-width: 480px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+        &lt;h1&gt;🚀 RowCode&lt;/h1&gt;
+        &lt;p&gt;Welcome to your mobile web app! Edit this code and click RUN to see changes.&lt;/p&gt;
+        
+        &lt;div class="feature-grid"&gt;
+            &lt;div class="feature"&gt;
+                &lt;h3&gt;📱 Mobile First&lt;/h3&gt;
+                &lt;p&gt;Optimized for touch devices&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div class="feature"&gt;
+                &lt;h3&gt;⚡ Instant Preview&lt;/h3&gt;
+                &lt;p&gt;See results immediately&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;button id="demo-btn"&gt;Tap Me! 👆&lt;/button&gt;
+        &lt;div id="output"&gt;Ready to code...&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;script&gt;
+        let count = 0;
+        const demoBtn = document.getElementById('demo-btn');
+        const output = document.getElementById('output');
+        
+        demoBtn.addEventListener('click', function() {
+            count++;
+            const messages = [
+                "Great start! 🎉",
+                "You're getting it! 🔥",
+                "Awesome tapping! 💪",
+                "You're a natural! 🌟",
+                "Keep going! 🚀"
+            ];
+            const message = messages[Math.min(count - 1, messages.length - 1)] || `Tap ${count} and counting!`;
+            
+            output.innerHTML = `&lt;strong&gt;${message}&lt;/strong&gt;&lt;br&gt;&lt;small&gt;Tapped ${count} time${count !== 1 ? 's' : ''}&lt;/small&gt;`;
+            
+            // Add visual feedback
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+        
+        // Add some interactive background effect
+        document.addEventListener('mousemove', function(e) {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            document.body.style.background = `linear-gradient(135deg, 
+                hsl(${240 + x * 60}, 70%, 60%), 
+                hsl(${300 + y * 60}, 70%, 60%))`;
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+                <textarea id="css-editor" spellcheck="false" style="display: none;" placeholder="Write your CSS code here...">/* Add your CSS styles here */
+
+/* Example mobile-responsive grid */
+.responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+/* Mobile-first card design */
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+/* Smooth animations for mobile */
+@media (prefers-reduced-motion: no-preference) {
+    .fade-in {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+/* Touch-friendly button sizes */
+.btn-mobile {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}</textarea>
+                <textarea id="js-editor" spellcheck="false" style="display: none;" placeholder="Write your JavaScript code here...">// Add your JavaScript here
+
+// Mobile-friendly touch events
+function setupTouchEvents() {
+    const elements = document.querySelectorAll('.touch-element');
+    
+    elements.forEach(element => {
+        let startX, startY;
+        
+        element.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            element.style.transform = 'scale(0.95)';
+        });
+        
+        element.addEventListener('touchend', (e) => {
+            element.style.transform = 'scale(1)';
+        });
+    });
+}
+
+// Example: Add some interactive features
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('RowCode app loaded successfully!');
+    
+    // Add loading animation
+    const loadingEl = document.createElement('div');
+    loadingEl.innerHTML = '✨ RowCode Ready!';
+    loadingEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--success);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        z-index: 1000;
+        animation: slideIn 0.5s ease-out;
+    `;
+    
+    // Add CSS for animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Show and remove loading message
+    setTimeout(() => {
+        document.body.appendChild(loadingEl);
+        setTimeout(() => {
+            loadingEl.remove();
+        }, 3000);
+    }, 1000);
+});
+
+// Utility function for mobile gestures
+class MobileGestures {
+    static onSwipe(element, callback) {
+        let startX, startY;
+        const minSwipeDistance = 50;
+        
+        element.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        element.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
+                callback(diffX > 0 ? 'left' : 'right');
+            } else if (Math.abs(diffY) > minSwipeDistance) {
+                callback(diffY > 0 ? 'up' : 'down');
+            }
+        });
+    }
+}</textarea>
+            </div>
+
+            <!-- Quick Preview Info -->
+            <div class="quick-preview">
+                <div class="preview-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Click RUN to open preview in new tab</span>
+                </div>
+                <button class="btn btn-outline" id="clear-btn">
+                    <i class="fas fa-broom"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">Code saved successfully!</div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const htmlEditor = document.getElementById('html-editor');
+        const cssEditor = document.getElementById('css-editor');
+        const jsEditor = document.getElementById('js-editor');
+        const tabs = document.querySelectorAll('.tab');
+        const saveBtn = document.getElementById('save-btn');
+        const runBtn = document.getElementById('run-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const formatBtn = document.getElementById('format-btn');
+        const toast = document.getElementById('toast');
+        const currentFile = document.getElementById('current-file');
+
+        // Tab switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Hide all editors
+                document.querySelectorAll('.editor-wrapper textarea').forEach(editor => {
+                    editor.style.display = 'none';
+                });
+                
+                // Show the selected editor
+                const tabType = tab.getAttribute('data-tab');
+                document.getElementById(`${tabType}-editor`).style.display = 'block';
+                currentFile.textContent = `${tabType === 'html' ? 'index' : tabType}.${tabType}`;
+            });
+        });
+
+        // Save code to localStorage
+        function saveCode() {
+            const codeData = {
+                html: htmlEditor.value,
+                css: cssEditor.value,
+                js: jsEditor.value,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('rowCodeData', JSON.stringify(codeData));
+            
+            // Show toast notification
+            showToast('Code saved successfully!');
+        }
+
+        // Run code - redirect to preview page
+        function runCode() {
+            // Save code first
+            saveCode();
+            
+            // Open preview in new tab
+            window.open('preview.html', '_blank');
+            
+            showToast('Opening preview...');
+        }
+
+        // Clear all editors
+        function clearCode() {
+            if (confirm('Are you sure you want to clear all code?')) {
+                htmlEditor.value = '';
+                cssEditor.value = '';
+                jsEditor.value = '';
+                showToast('All editors cleared');
+            }
+        }
+
+        // Format code
+        function formatCode() {
+            const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+            const editor = document.getElementById(`${activeTab}-editor`);
+            
+            let formattedCode = editor.value;
+            
+            if (activeTab === 'html') {
+                formattedCode = formattedCode
+                    .replace(/\s+/g, ' ')
+                    .replace(/>\s+</g, '>\n<')
+                    .replace(/\s*>\s*/g, '>\n');
+            } else if (activeTab === 'css') {
+                formattedCode = formattedCode
+                    .replace(/\s*{\s*/g, ' {\n  ')
+                    .replace(/\s*;\s*/g, ';\n  ')
+                    .replace(/\s*}\s*/g, '\n}\n\n');
+            } else if (activeTab === 'js') {
+                formattedCode = formattedCode
+                    .replace(/\s*{\s*/g, ' {\n  ')
+                    .replace(/\s*}\s*/g, '\n}\n')
+                    .replace(/\s*;\s*/g, ';\n  ');
+            }
+            
+            editor.value = formattedCode;
+            showToast('Code formatted');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Load saved code
+        function loadCode() {
+            const savedCode = localStorage.getItem('rowCodeData');
+            if (savedCode) {
+                const codeData = JSON.parse(savedCode);
+                htmlEditor.value = codeData.html || htmlEditor.value;
+                cssEditor.value = codeData.css || cssEditor.value;
+                jsEditor.value = codeData.js || jsEditor.value;
+            }
+        }
+
+        // Event listeners
+        saveBtn.addEventListener('click', saveCode);
+        runBtn.addEventListener('click', runCode);
+        clearBtn.addEventListener('click', clearCode);
+        formatBtn.addEventListener('click', formatCode);
+
+        // Auto-save on input with debounce
+        let timeout;
+        [htmlEditor, cssEditor, jsEditor].forEach(editor => {
+            editor.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(saveCode, 1500);
+            });
+        });
+
+        // Load saved code on startup
+        loadCode();
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // Handle app installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt (you can customize this)
+            setTimeout(() => {
+                if (deferredPrompt && confirm('Install RowCode for a better experience?')) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        deferredPrompt = null;
+                    });
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

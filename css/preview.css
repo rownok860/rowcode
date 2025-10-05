@@ -1,0 +1,102 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .preview-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .preview-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .preview-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3498db;
+        }
+        
+        #preview-content {
+            min-height: calc(100vh - 70px);
+            background: white;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 1.1rem;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 20px;
+            margin: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .btn span.text {
+                display: none;
+            }
+            
+            .btn {
+                padding: 10px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+            }
+            
+            .preview-title {
+                font-size: 1.1rem;
+            }
+        }
