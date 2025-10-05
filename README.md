@@ -17,6 +17,7 @@ RowCode is a mobile-first code editor for HTML, CSS, and JavaScript that works i
 *   **Syntax Highlighting:** (Coming Soon)
 *   **Code Formatting:** Basic code formatting for HTML, CSS, and JS.
 *   **Local Storage:** Your code is automatically saved to your browser's local storage.
+*   **PWA Ready:** Installable on your device for a native-like experience.
 
 ### How to Use:
 
