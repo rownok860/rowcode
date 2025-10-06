@@ -10,6 +10,8 @@
         const formatBtn = document.getElementById('format-btn');
         const toast = document.getElementById('toast');
         const currentFile = document.getElementById('current-file');
+        const floatingBtnContainer = document.getElementById('floating-btn-container');
+        const closeFloatingBtn = document.getElementById('close-floating-btn');
 
         // Tab switching
         tabs.forEach(tab => {
@@ -122,6 +124,9 @@
         runBtn.addEventListener('click', runCode);
         clearBtn.addEventListener('click', clearCode);
         formatBtn.addEventListener('click', formatCode);
+        closeFloatingBtn.addEventListener('click', () => {
+            floatingBtnContainer.style.display = 'none';
+        });
 
         // Auto-save on input with debounce
         let timeout;
