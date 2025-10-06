@@ -1,7 +1,8 @@
 # RowCode - A Mobile-First Code Editor
 
 [![Run a Demo](https://img.shields.io/badge/Run_a_Demo-2ecc71?style=for-the-badge)](https://rownok.com/tool/code) [![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/rownok)
-
+<a href="https://www.producthunt.com/products/github-200?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-github&#0045;0a0964bc&#0045;032f&#0045;479f&#0045;916d&#0045;072bc1a3be0c" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1023737&theme=neutral&t=1759790325055" alt="GitHub - a&#0032;mobile&#0045;first&#0032;code&#0032;editor&#0032;that&#0032;works&#0032;in&#0032;your&#0032;browser&#0046; | Product Hunt" style="width: 150px; height: 54px;" width="150" height="54" /></a>
+<br>
 RowCode is a simple, mobile-first code editor for HTML, CSS, and JavaScript that runs directly in your browser. It's designed for quick prototyping, learning, and testing web snippets on the go.
 
 ![RowCode Screenshot](rowcode-thumb.png)
